@@ -29,7 +29,7 @@
   </property>
   <property>
     <name>fs.default.name</name>
-    <value>hdfs://[NAMENODE_HOST]:9000</value>
+    <value>hdfs://[NAMENODE_HOST]:8020</value>
   </property>
   <property>
     <name>JAVA_HOME</name>

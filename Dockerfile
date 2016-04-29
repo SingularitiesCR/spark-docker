@@ -55,8 +55,8 @@ ENV PATH=$PATH:$SPARK_HOME/bin
 
 # Set entrypoint
 COPY entrypoint.sh /opt/entrypoint.sh
-ENTRYPOINT ["/opt/entrypoint.sh"]
 USER spark
+ENTRYPOINT ["/opt/entrypoint.sh"]
 
 # Expose ports
-EXPOSE 6066 7077 8020 8080 8081 9000 19888 50010 50020 50070 50075 50090
+EXPOSE 6066 7077 8020 8080 8081 19888 50010 50020 50070 50075 50090
