@@ -14,8 +14,6 @@ run_master() {
   sed -i.bak "s|\[NAMENODE_HOST\]|$(hostname)|g" $HADOOP_CONF_DIR/core-site.xml
   hdfs namenode -format -force
   start-dfs.sh
-  hadoop fs -mkdir -p /tmp
-  hadoop fs -chmod -R 777 /tmp
   # Run spark master
   spark-class org.apache.spark.deploy.master.Master -h $(hostname)
 }

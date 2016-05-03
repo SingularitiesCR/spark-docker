@@ -19,7 +19,7 @@ RUN apt-get update \
   && addgroup --system spark \
   && adduser --system --no-create-home --disabled-password --shell /bin/false \
     spark \
-  && adduser spark spark
+  && usermod -g spark spark
 
 # Install Hadoop
 RUN mkdir -p $HADOOP_HOME \
