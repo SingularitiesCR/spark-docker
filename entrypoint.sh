@@ -3,23 +3,19 @@
 # Read environment variables
 source /etc/environment
 
-clean_hdfs() {
-  rm -rf /opt/hdfs/tmp
-  mkdir -p /opt/hdfs/tmp
-}
-
 run_master() {
-  clean_hdfs
   # Start HDFS name node
   sed -i.bak "s|\[NAMENODE_HOST\]|$(hostname)|g" $HADOOP_CONF_DIR/core-site.xml
-  hdfs namenode -format -force
+  rm -f $HADOOP_CONF_DIR/core-site.xml.bak
+  if [ ! -f /opt/hdfs/name/current/VERSION ]; then
+    hdfs namenode -format -force
+  fi
   start-dfs.sh
   # Run spark master
   spark-class org.apache.spark.deploy.master.Master -h $(hostname)
 }
 
 run_worker() {
-  clean_hdfs
   # Check master argument
   local master=$1
   if [ -z "${master}" ]; then
@@ -32,6 +28,7 @@ run_worker() {
   done;
   # Start HDFS data node
   sed -i.bak "s|\[NAMENODE_HOST\]|${master}|g" $HADOOP_CONF_DIR/core-site.xml
+  rm -f $HADOOP_CONF_DIR/core-site.xml.bak
   hadoop-daemon.sh start datanode
   # Wait for Spark master to be online
   while ! nc -z $master 7077; do
@@ -41,6 +38,8 @@ run_worker() {
   spark-class org.apache.spark.deploy.worker.Worker spark://$master:7077
 }
 
+chown -R spark:spark /opt/hdfs
+su spark
 if [ "$1" == "master" ]; then
   run_master
 elif [ "$1" == "worker" ]; then
