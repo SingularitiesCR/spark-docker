@@ -13,6 +13,10 @@ The `master` command will create a Spark master with an HDFS name node. It is ad
 
 The `worker` command will create a Spark worker with an HDFS data node. In order for the worker to find the master the hostname or IP Address must be specified as part of the command.
 
+## Spark user
+
+The image has a user named `spark`, who runs the main processes; nevertheless, the entrypoint script is run as `root`. This is necessary to ensure that the mounted volumes always have the appropriate owner and group.
+
 ## Creating a Cluster with Docker Compose
 
 The easiest way to create a standalone cluster with this image is by using [Docker Compose](https://docs.docker.com/compose). The following snippet can be used as a `docker-compose.yml` for a simple cluster:
@@ -40,7 +44,13 @@ services:
       - sparkmaster
 ```
 
-All Spark and HDFS ports are exposed by the image. In the example compose file we only map the Spark submit port and the ports for the web clients.
+All Spark and HDFS ports are exposed by the image. In the example compose file we only map the Spark submit ports and the ports for the web clients.
+
+### Persistence
+
+The image has a volume mounted at `/opt/hdfs` in order to maintain states between restarts. Mount a volume at this location if you wish to map the HDFS data to your machine. This should be done for the master service and the worker services.
+
+### Scaling
 
 If you wish to increase the number of workers the `sparkworker` service can be scale using the `scale` command like follows:
 
@@ -56,4 +66,3 @@ This version of the container image is uses the following components:
 
 - Java: `OpenJDK 8`
 - Hadoop: `2.7.2 `
-- Spark: `1.5.2`
