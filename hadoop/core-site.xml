@@ -16,23 +16,7 @@
 
 <configuration>
   <property>
-    <name>hadoop.tmp.dir</name>
-    <value>/opt/hdfs/tmp</value>
-  </property>
-  <property>
-    <name>hadoop.name.dir</name>
-    <value>/opt/hdfs/name</value>
-  </property>
-  <property>
-    <name>hadoop.data.dir</name>
-    <value>/opt/hdfs/data</value>
-  </property>
-  <property>
-    <name>fs.default.name</name>
+    <name>fs.defaultFS</name>
     <value>hdfs://[NAMENODE_HOST]:8020</value>
-  </property>
-  <property>
-    <name>JAVA_HOME</name>
-    <value>[JAVA_HOME]</value>
   </property>
 </configuration>
