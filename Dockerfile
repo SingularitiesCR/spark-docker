@@ -16,10 +16,7 @@ RUN apt-get update \
     curl netcat \
   && apt-get clean \
 	&& rm -rf /var/lib/apt/lists/* \
-  && addgroup --system spark \
-  && adduser --system --no-create-home --disabled-password --shell /bin/false \
-    spark \
-  && usermod -g spark spark
+  && adduser --no-create-home --disabled-password --gecos "" spark
 
 # Install Hadoop
 RUN mkdir -p $HADOOP_HOME \
@@ -32,16 +29,12 @@ ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
   PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 
 # Copy Hadoop configuration
-VOLUME /opt/hdfs/data
+VOLUME /opt/hdfs
 COPY /hadoop/*.xml $HADOOP_CONF_DIR/
-RUN sed -i.bak "s|\[JAVA_HOME\]|${JAVA_HOME}|g" $HADOOP_CONF_DIR/core-site.xml \
-  && rm -f $HADOOP_CONF_DIR/core-site.xml.bak \
-  && sed -i.bak "s/hadoop-daemons.sh/hadoop-daemon.sh/g" $HADOOP_HOME/sbin/start-dfs.sh \
+RUN sed -i.bak "s/hadoop-daemons.sh/hadoop-daemon.sh/g" $HADOOP_HOME/sbin/start-dfs.sh \
   && rm -f $HADOOP_HOME/sbin/start-dfs.sh.bak \
   && sed -i.bak "s/hadoop-daemons.sh/hadoop-daemon.sh/g" $HADOOP_HOME/sbin/stop-dfs.sh \
-  && rm -f $HADOOP_HOME/sbin/stop-dfs.sh.bak \
-  && chown -R spark:spark $HADOOP_HOME \
-  && chown -R spark:spark /opt/hdfs
+  && rm -f $HADOOP_HOME/sbin/stop-dfs.sh.bak
 
 # Install Spark
 RUN mkdir -p $SPARK_HOME \
@@ -55,7 +48,6 @@ ENV PATH=$PATH:$SPARK_HOME/bin
 
 # Set entrypoint
 COPY entrypoint.sh /opt/entrypoint.sh
-USER spark
 ENTRYPOINT ["/opt/entrypoint.sh"]
 
 # Expose ports
