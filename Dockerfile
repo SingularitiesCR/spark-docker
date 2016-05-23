@@ -41,14 +41,13 @@ RUN mkdir -p $SPARK_HOME \
   && curl -sSL \
     http://d3kbcqa49mib13.cloudfront.net/spark-$SPARK_VERSION-bin-without-hadoop.tgz \
     | tar -xz -C $SPARK_HOME --strip-components 1 \
-  && rm -rf $SPARK_HOME/examples \
-  && echo "export SPARK_DIST_CLASSPATH=\$(hadoop classpath)" >> /etc/environment \
   && chown -R spark:spark $SPARK_HOME
+COPY spark-env.sh $SPARK_HOME/conf/spark-env.sh
 ENV PATH=$PATH:$SPARK_HOME/bin
 
-# Set entrypoint
-COPY entrypoint.sh /opt/entrypoint.sh
-ENTRYPOINT ["/opt/entrypoint.sh"]
+# Copy custom scripts
+COPY bin /opt/spark-docker/bin
+ENV PATH=$PATH:/opt/spark-docker/bin
 
 # Expose ports
 EXPOSE 6066 7077 8020 8080 8081 19888 50010 50020 50070 50075 50090
