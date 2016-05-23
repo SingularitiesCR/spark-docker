@@ -39,7 +39,7 @@ RUN sed -i.bak "s/hadoop-daemons.sh/hadoop-daemon.sh/g" $HADOOP_HOME/sbin/start-
 # Install Spark
 RUN mkdir -p $SPARK_HOME \
   && curl -sSL \
-    http://d3kbcqa49mib13.cloudfront.net/spark-$SPARK_VERSION-bin-without-hadoop.tgz \
+    http://mirrors.ocf.berkeley.edu/apache/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION-bin-without-hadoop.tgz \
     | tar -xz -C $SPARK_HOME --strip-components 1 \
   && chown -R spark:spark $SPARK_HOME
 COPY spark-env.sh $SPARK_HOME/conf/spark-env.sh
