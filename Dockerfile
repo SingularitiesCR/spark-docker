@@ -46,9 +46,9 @@ RUN mkdir -p $SPARK_HOME \
   && chown -R spark:spark $SPARK_HOME
 ENV PATH=$PATH:$SPARK_HOME/bin
 
-# Set entrypoint
-COPY entrypoint.sh /opt/entrypoint.sh
-ENTRYPOINT ["/opt/entrypoint.sh"]
+# Copy custom scripts
+COPY bin /opt/spark-docker/bin
+ENV PATH=$PATH:/opt/spark-docker/bin
 
 # Expose ports
 EXPOSE 6066 7077 8020 8080 8081 19888 50010 50020 50070 50075 50090
