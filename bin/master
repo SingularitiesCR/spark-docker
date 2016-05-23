@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Read environment variables
+source /etc/environment
+
+# Fix directory permissions
+chown -R spark:spark /opt/hdfs
+
+# Set user
+su spark
+
+# Start HDFS name node
+sed -i.bak "s|\[NAMENODE_HOST\]|$(hostname)|g" $HADOOP_CONF_DIR/core-site.xml
+rm -f $HADOOP_CONF_DIR/core-site.xml.bak
+if [ ! -f /opt/hdfs/name/current/VERSION ]; then
+  hdfs namenode -format -force
+fi
+start-dfs.sh
+
+# Run spark master
+spark-class org.apache.spark.deploy.master.Master -h $(hostname)
