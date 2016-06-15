@@ -17,5 +17,8 @@ if [ ! -f /opt/hdfs/name/current/VERSION ]; then
 fi
 start-dfs.sh
 
+# Fix permissions for root directory
+hdfs dfs -chown spark:spark /
+
 # Run spark master
 spark-class org.apache.spark.deploy.master.Master -h $(hostname)
