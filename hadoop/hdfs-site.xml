@@ -31,4 +31,8 @@
     <name>dfs.namenode.checkpoint.dir</name>
     <value>file:/opt/hdfs/checkpoint</value>
   </property>
+  <property>
+    <name>dfs.namenode.datanode.registration.ip-hostname-check</name>
+    <value>false</value>
+  </property>
 </configuration>
