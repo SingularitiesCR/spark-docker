@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# Set default HDFS user if not set
+if [[ -z "${HDFS_USER}" ]]; then
+  export HDFS_USER=spark
+fi
+
+if [[ "${1}" = 'master' ]]; then
+  # Start Hadoop NameNode
+  start-hadoop namenode daemon
+  # Start Spark Master
+  spark-class org.apache.spark.deploy.master.Master -h $(hostname)
+elif [[ "${1}" = 'worker' ]]; then
+  # Start Hadoop DataNode
+  start-hadoop datanode $2 daemon
+  # Wait for the master to start
+  while ! nc -z $2 7077; do
+    sleep 2;
+  done;
+  # Start Spark Worker
+  spark-class org.apache.spark.deploy.worker.Worker spark://$2:7077
+else
+  echo "Invalid command '${1}'" >&2
+  exit 1
+fi
