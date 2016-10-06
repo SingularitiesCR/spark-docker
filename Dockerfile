@@ -1,56 +1,44 @@
-FROM java:openjdk-8-jre
+FROM singularities/hadoop:2.7
 MAINTAINER Singularities
 
-# Versions
-ENV HADOOP_VERSION=2.7.2 \
-  SPARK_VERSION=1.6.1
+# Version
+ENV SPARK_VERSION=1.6.2
 
-# Set homes
-ENV SPARK_HOME=/usr/local/spark \
-  HADOOP_HOME=/usr/local/hadoop-$HADOOP_VERSION
+# Set home
+ENV SPARK_HOME=/usr/local/spark-$SPARK_VERSION
 
-# Install dependencies and create user
+# Install dependencies
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install \
-    -yq --no-install-recommends \
-    curl netcat \
+    -yq --no-install-recommends  \
+      python python3 \
   && apt-get clean \
-	&& rm -rf /var/lib/apt/lists/* \
-  && adduser --no-create-home --disabled-password --gecos "" spark
-
-# Install Hadoop
-RUN mkdir -p $HADOOP_HOME \
-  && curl -sSL \
-    http://mirrors.ocf.berkeley.edu/apache/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz \
-    | tar -xz -C $HADOOP_HOME --strip-components 1 \
-  && mkdir -p /opt/hdfs
-ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
-  HADOOP_LIBEXEC_DIR=$HADOOP_HOME/libexec \
-  PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
-
-# Copy Hadoop configuration
-VOLUME /opt/hdfs
-COPY /hadoop/*.xml $HADOOP_CONF_DIR/
-RUN sed -i.bak "s/hadoop-daemons.sh/hadoop-daemon.sh/g" $HADOOP_HOME/sbin/start-dfs.sh \
-  && rm -f $HADOOP_HOME/sbin/start-dfs.sh.bak \
-  && sed -i.bak "s/hadoop-daemons.sh/hadoop-daemon.sh/g" $HADOOP_HOME/sbin/stop-dfs.sh \
-  && rm -f $HADOOP_HOME/sbin/stop-dfs.sh.bak
+	&& rm -rf /var/lib/apt/lists/*
 
 # Install Spark
-RUN mkdir -p $SPARK_HOME \
-  && curl -sSL \
-    http://mirrors.ocf.berkeley.edu/apache/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION-bin-without-hadoop.tgz \
-    | tar -xz -C $SPARK_HOME --strip-components 1 \
-  && chown -R spark:spark $SPARK_HOME
+RUN mkdir -p "${SPARK_HOME}" \
+  && export ARCHIVE=spark-$SPARK_VERSION-bin-without-hadoop.tgz \
+  && export DOWNLOAD_PATH=apache/spark/spark-$SPARK_VERSION/$ARCHIVE \
+  && curl -sSL https://mirrors.ocf.berkeley.edu/$DOWNLOAD_PATH | \
+    tar -xz -C $SPARK_HOME --strip-components 1 \
+  && rm -rf $ARCHIVE
 COPY spark-env.sh $SPARK_HOME/conf/spark-env.sh
 ENV PATH=$PATH:$SPARK_HOME/bin
 
-# Copy custom scripts
-COPY bin /opt/spark-docker/bin
-ENV PATH=$PATH:/opt/spark-docker/bin
+# Ports
+EXPOSE 6066 7077 8080 8081
 
-# Set path for interactive shells
-RUN echo 'export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$SPARK_HOME/bin:/opt/spark-docker/bin' >> /etc/bash.bashrc
+# Copy start script
+COPY start-spark /opt/util/bin/start-spark
 
-# Expose ports
-EXPOSE 6066 7077 8020 8080 8081 19888 50010 50020 50070 50075 50090
+# Fix environment for other users
+RUN echo "export SPARK_HOME=$SPARK_HOME" >> /etc/bash.bashrc \
+  && echo 'export PATH=$PATH:$SPARK_HOME/bin'>> /etc/bash.bashrc
+
+# Add deprecated commands
+RUN echo '#!/usr/bin/env bash' > /usr/bin/master \
+  && echo 'start-spark master' >> /usr/bin/master \
+  && chmod +x /usr/bin/master \
+  && echo '#!/usr/bin/env bash' > /usr/bin/worker \
+  && echo 'start-spark worker $1' >> /usr/bin/worker \
+  && chmod +x /usr/bin/worker
