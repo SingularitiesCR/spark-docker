@@ -70,7 +70,7 @@ The image has a volume mounted at `/opt/hdfs`. To maintain states between restar
 If you wish to increase the number of workers scale the `worker` service by running the `scale` command like follows:
 
 ```sh
-docker-compose scale sparkworker=2
+docker-compose scale worker=2
 ```
 
 The workers will automatically register themselves with the master.
