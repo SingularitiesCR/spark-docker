@@ -4,19 +4,6 @@ An [Apache Spark](http://spark.apache.org/) container image. The image is meant 
 
 - [`1.5` (Dockerfile)](https://github.com/SingularitiesCR/spark-docker/blob/1.5/Dockerfile)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Custom commands
 
 This image contains a script named `start-spark` (included in the PATH). This script is used to initialize the master and the workers.
