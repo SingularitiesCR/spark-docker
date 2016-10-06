@@ -74,4 +74,3 @@ docker-compose scale worker=2
 ```
 
 The workers will automatically register themselves with the master.
-
