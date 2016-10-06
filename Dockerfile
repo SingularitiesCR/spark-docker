@@ -2,7 +2,7 @@ FROM singularities/hadoop:2.7
 MAINTAINER Singularities
 
 # Version
-ENV SPARK_VERSION=1.6.2
+ENV SPARK_VERSION=2.0.1
 
 # Set home
 ENV SPARK_HOME=/usr/local/spark-$SPARK_VERSION

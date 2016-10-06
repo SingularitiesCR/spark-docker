@@ -4,6 +4,7 @@ An [Apache Spark](http://spark.apache.org/) container image. The image is meant 
 
 - [`1.5` (Dockerfile)](https://github.com/SingularitiesCR/spark-docker/blob/1.5/Dockerfile)
 - [`1.6` (Dockerfile)](https://github.com/SingularitiesCR/spark-docker/blob/1.6/Dockerfile)
+- [`2.0` (Dockerfile)](https://github.com/SingularitiesCR/spark-docker/blob/2.0/Dockerfile)
 
 ## Custom commands
 
