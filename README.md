@@ -39,9 +39,27 @@ The commands `master` and `worker` from previous versions of the image are maint
 The easiest way to create a standalone cluster with this image is by using [Docker Compose](https://docs.docker.com/compose). The following snippet can be used as a `docker-compose.yml` for a simple cluster:
 
 ```YAML
-```
+version: "2"
 
-*All Spark and HDFS ports are exposed by the image. In the example compose file we only map the Spark submit ports and the ports for the web clients.*
+services:
+  master:
+    image: singularities/spark
+    command: start-spark master
+    hostname: master
+    ports:
+      - "6066:6066"
+      - "7070:7070"
+      - "8080:8080"
+      - "50070:50070"
+  worker:
+    image: singularities/spark
+    command: start-spark worker master
+    environment:
+      SPARK_WORKER_CORES: 1
+      SPARK_WORKER_MEMORY: 2g
+    links:
+      - master
+```
 
 ### Persistence
 
@@ -49,10 +67,11 @@ The image has a volume mounted at `/opt/hdfs`. To maintain states between restar
 
 ### Scaling
 
-If you wish to increase the number of workers scale the `sparkworker` service by running the `scale` command like follows:
+If you wish to increase the number of workers scale the `worker` service by running the `scale` command like follows:
 
 ```sh
 docker-compose scale sparkworker=2
 ```
 
 The workers will automatically register themselves with the master.
+
