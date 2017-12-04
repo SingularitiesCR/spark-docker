@@ -1,4 +1,4 @@
-FROM singularities/hadoop:2.7
+FROM singularities/hadoop:2.8
 MAINTAINER Singularities
 
 # Version
