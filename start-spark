@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 # Set default HDFS user if not set
 if [[ -z "${HDFS_USER}" ]]; then
   export HDFS_USER=spark
