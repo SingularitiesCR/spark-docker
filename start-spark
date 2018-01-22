@@ -11,12 +11,12 @@ if [[ "${1}" = 'master' ]]; then
   # Start Spark Master
   spark-class org.apache.spark.deploy.master.Master -h $(hostname)
 elif [[ "${1}" = 'worker' ]]; then
-  # Start Hadoop DataNode
-  start-hadoop datanode $2 daemon
-  # Wait for the master to start
-  while ! nc -z $2 7077; do
+  # Wait for the Spark Master/Hadoop Namenode to start
+  while ! nc -z $2 7077 || ! nc -z $2 50070 ; do
     sleep 2;
   done;
+  # Start Hadoop DataNode
+  start-hadoop datanode $2 daemon
   # Start Spark Worker
   spark-class org.apache.spark.deploy.worker.Worker spark://$2:7077
 else
